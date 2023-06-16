@@ -30,6 +30,15 @@ final class VideoTextLabel: UILabel {
 
 final class VideoTextPreview: UIView {
     
+    private var mockData: [VideoText]  {
+        let videoTexts = [
+            VideoText(text: "Hello World", position: .init(x: 195.1666717529297, y: 280.50000254313153), angle: 0.8337175272646314, fontSize: 89.39357687222396),
+            VideoText(text: "Hello World", position: .init(x: 199.8333511352539, y: 274.49998728434247), angle: -0.47580464260803695, fontSize: 82.1565932713097),
+            VideoText(text: "Hello World", position: .init(x: 68.49998474121094, y: 466.1666666666667), angle: 0, fontSize: 18)
+        ]
+        return videoTexts
+    }
+    
     private var videoTexts: [String: VideoText] = [:]
     private var textLabels: [UILabel] = []
     private var selectedTextLabel: UILabel?
@@ -39,6 +48,7 @@ final class VideoTextPreview: UIView {
         backgroundColor = .white
         isUserInteractionEnabled = true
         isMultipleTouchEnabled = true
+        clipsToBounds = true
         setupGesture()
     }
     
@@ -58,10 +68,19 @@ final class VideoTextPreview: UIView {
         addGestureRecognizer(rotationGesture)
     }
     
-    func addNewText() {
-        var videoText = VideoText(
+    func loadMockData() {
+        clearAllText()
+        
+        mockData.forEach { data in
+            addNewText(data)
+        }
+    }
+    
+    func addNewText(_ text: VideoText? = nil) {
+        var videoText = text ?? VideoText(
             text: "Hello World",
-            position: .zero,
+            position: CGPoint(x: frame.width * 0.5, y: frame.height * 0.5),
+            angle: 0,
             fontSize: 18
         )
         let label = VideoTextLabel()
@@ -70,16 +89,12 @@ final class VideoTextPreview: UIView {
         label.lineBreakMode = .byCharWrapping
         label.accessibilityIdentifier = videoText.id
         label.isUserInteractionEnabled = true
-        label.font = self.font(size: 18)
+        label.font = self.font(size: videoText.fontSize)
         label.sizeToFit()
         label.onTouchBegan = selectText(label:)
         
-        
-        let centerPosition = CGPoint(x: frame.width * 0.5, y: frame.height * 0.5)
-        videoText.position = centerPosition
-        videoText.initialSize = label.frame.size
-        videoText.size = label.frame.size
-        label.center = centerPosition
+        label.center = videoText.position
+        label.transform = CGAffineTransform(rotationAngle: videoText.angle)
         videoTexts[videoText.id] = videoText
         textLabels.append(label)
         addSubview(label)
@@ -147,6 +162,8 @@ final class VideoTextPreview: UIView {
         label.center = center
         label.transform = CGAffineTransform(rotationAngle: radians)
         videoTexts[identifier]!.angle = radians
+        videoTexts[identifier]!.position = center
+        print(String(describing: videoTexts))
     }
     
     @objc private func handleRotation(_ gesture: UIRotationGestureRecognizer) {

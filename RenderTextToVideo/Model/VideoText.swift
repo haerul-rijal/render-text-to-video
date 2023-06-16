@@ -26,20 +26,16 @@ struct VideoText: Equatable, Identifiable {
     var id: String
     
     var text: String
-    var initialSize: CGSize
     var position: CGPoint
-    var size: CGSize
     var angle: CGFloat
     var fontSize: CGFloat
     
-    init(id: String = UUID().uuidString, text: String, initialSize: CGSize = .zero, position: CGPoint, size: CGSize = .zero, angle: CGFloat = 0, fontSize: CGFloat = 0) {
+    init(id: String = UUID().uuidString, text: String, position: CGPoint, angle: CGFloat = 0, fontSize: CGFloat = 0) {
         self.id = id
         self.text = text
         self.position = position
-        self.size = size
         self.angle = angle
         self.fontSize = fontSize
-        self.initialSize = initialSize
     }
     
 }
