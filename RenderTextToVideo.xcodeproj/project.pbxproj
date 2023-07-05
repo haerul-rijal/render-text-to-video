@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B2686DB2A54DB080028771E /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2686DA2A54DB080028771E /* SecondViewController.swift */; };
+		2B35513D2A4013CC0098D345 /* VideoRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B35513C2A4013CC0098D345 /* VideoRenderer.swift */; };
 		2BCE8E232A2DD7FF00ADD721 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE8E222A2DD7FF00ADD721 /* AppDelegate.swift */; };
 		2BCE8E252A2DD7FF00ADD721 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE8E242A2DD7FF00ADD721 /* SceneDelegate.swift */; };
 		2BCE8E272A2DD7FF00ADD721 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE8E262A2DD7FF00ADD721 /* ViewController.swift */; };
@@ -42,6 +44,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2B2686DA2A54DB080028771E /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
+		2B35513C2A4013CC0098D345 /* VideoRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRenderer.swift; sourceTree = "<group>"; };
 		2BCE8E1F2A2DD7FF00ADD721 /* RenderTextToVideo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RenderTextToVideo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BCE8E222A2DD7FF00ADD721 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2BCE8E242A2DD7FF00ADD721 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -134,6 +138,8 @@
 				2BCE8E302A2DD80000ADD721 /* Info.plist */,
 				2BCE8E562A302FD500ADD721 /* PreviewVC.swift */,
 				2BE373D12A3AFC26002CBF3C /* Helper.swift */,
+				2B35513C2A4013CC0098D345 /* VideoRenderer.swift */,
+				2B2686DA2A54DB080028771E /* SecondViewController.swift */,
 			);
 			path = RenderTextToVideo;
 			sourceTree = "<group>";
@@ -356,11 +362,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B2686DB2A54DB080028771E /* SecondViewController.swift in Sources */,
 				2BCE8E272A2DD7FF00ADD721 /* ViewController.swift in Sources */,
 				2BCE922C2A305D3300ADD721 /* VideoTextPreviewNode.swift in Sources */,
 				2BCE8E232A2DD7FF00ADD721 /* AppDelegate.swift in Sources */,
 				2BCE922A2A30460D00ADD721 /* VideoTextPreview.swift in Sources */,
 				2BCE8E572A302FD500ADD721 /* PreviewVC.swift in Sources */,
+				2B35513D2A4013CC0098D345 /* VideoRenderer.swift in Sources */,
 				2BE373D22A3AFC26002CBF3C /* Helper.swift in Sources */,
 				2BCE8E552A302C7D00ADD721 /* VideoText.swift in Sources */,
 				2BCE92282A3045DD00ADD721 /* ViewWrapperNode.swift in Sources */,
@@ -539,6 +547,9 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RenderTextToVideo/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "We need to save your video";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need to save your video";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = LaunchScreen;
@@ -571,6 +582,9 @@
 				DEVELOPMENT_TEAM = 4AD342VD64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RenderTextToVideo/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "We need to save your video";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need to save your video";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = LaunchScreen;

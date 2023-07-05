@@ -16,8 +16,8 @@ internal final class VideoTextPreviewNode: ASDisplayNode {
         return view
     }
     
-    internal override init() {
+    internal init(state: VideoTextState) {
         super.init()
-        setViewBlock { VideoTextPreview() }
+        setViewBlock { VideoTextPreview(state: state) }
     }
 }
