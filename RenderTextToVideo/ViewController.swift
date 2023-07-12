@@ -20,77 +20,15 @@ class ViewController: DisplayNodeViewController {
         ("Portrait", "file:///Users/haerul.rijal/Library/Developer/CoreSimulator/Devices/35F26D74-9B1D-4549-9EE6-318138AE8DFC/data/Media/DCIM/100APPLE/IMG_0008.MP4")
     ]
     
-    private var mockState: VideoTextState  {
-        let videoTexts: [VideoText] = [
-            VideoText(
-                text: .loremIpsumText,
-                centerPosition: CGPoint(x: 287.6666590372721, y: 264.49998474121094),
-                fontSize: 18,
-                transform: CGAffineTransform(
-                    0.011097607517835945,
-                    -1.1017656309622608,
-                    1.1017656309622608,
-                    0.011097607517835945,
-                    0.0,
-                    0.0
-                )
-            ),
-            VideoText(
-                text: .loremIpsumText,
-                centerPosition: CGPoint(x: 177.83334604899088, y: 553.1666590372721),
-                fontSize: 18,
-                transform: CGAffineTransform(
-                    0.9650346671601788,
-                    -0.10630982081827722,
-                    0.10630982081827722,
-                    0.9650346671601788,
-                    0.0,
-                    0.0
-                )
-            ),
-            VideoText(
-                text: .loremIpsumText,
-                centerPosition: CGPoint(x: 113.16669718424478, y: 290.1666666666667),
-                fontSize: 18,
-                transform: CGAffineTransform(
-                    0.615979561870174,
-                    0.011255414473079527,
-                    -0.011255414473079527,
-                    0.615979561870174,
-                    0.0,
-                    0.0
-                )
-            ),
-            
-            VideoText(
-                text: .loremIpsumText,
-                centerPosition: CGPoint(x: 103.50001017252603, y: 92.49997965494794),
-                fontSize: 18,
-                transform: CGAffineTransform(
-                    0.6078795511474879,
-                    0.02081983220069113,
-                    -0.02081983220069113,
-                    0.6078795511474879,
-                    0.0,
-                    0.0
-                )
-            )
-            
-        ]
-        
-        var texts: [String: VideoText] = [:]
-        videoTexts.forEach { text in
-            texts[text.id] = text
-        }
-        
-        return VideoTextState(texts: texts)
-    }
     
     var videoSize: CGSize = CGSize(width: 768, height: 1024)
     {
         didSet {
-            videoNode.style.preferredSize = videoSize.sizeThatFits(in: node.bounds.size)
-//            textNode.style.preferredSize = videoSize.sizeThatFits(in: videoNode.bounds.size)
+            let size = videoSize.sizeThatFits(in: videoNode.bounds.size)
+            self.textNode.style.preferredSize = CGSize(width: ceil(size.width), height: ceil(size.height))
+            self.textNode.wrappedView.videoTextState.videoSize = videoSize
+            self.textNode.setNeedsLayout()
+            self.node.setNeedsLayout()
         }
     }
     
@@ -156,9 +94,9 @@ class ViewController: DisplayNodeViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         title = "Add Text"
-//        textNode.layer.borderColor = UIColor.yellow.cgColor
-//        textNode.layer.borderWidth = 1
-        videoNode.style.preferredSize = videoSize.sizeThatFits(in: node.bounds.size)
+        navigationItem.title = "Add Text"
+//        node.backgroundColor = .white
+        //videoNode.style.preferredSize = videoSize.sizeThatFits(in: node.bounds.size)
         setupHandler()
     }
     
@@ -167,12 +105,6 @@ class ViewController: DisplayNodeViewController {
             .asDriver()
             .drive { [weak self] _ in
                 guard let self else { return }
-                
-                // TODO
-                self.textNode.style.preferredSize = videoSize.sizeThatFits(in: videoNode.bounds.size)
-                self.textNode.setNeedsLayout()
-                self.node.setNeedsLayout()
-                // ----
                 self.textNode.wrappedView.addNewText()
             }
             .disposed(by: self.disposeBag)
@@ -198,7 +130,7 @@ class ViewController: DisplayNodeViewController {
             .asDriver()
             .drive { [weak self] _ in
                 guard let self, self.videoNode.asset != nil else { return }
-                self.textNode.wrappedView.loadMockData(mockState)
+                self.textNode.wrappedView.loadMockData(.mockState)
             }
             .disposed(by: self.disposeBag)
         
@@ -206,23 +138,24 @@ class ViewController: DisplayNodeViewController {
             .asDriver()
             .drive { [weak self] _ in
                 guard let self, let asset = self.videoNode.asset else { return }
+                /*
                 let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 print(documentsDirectory)
-                
+
                 let size = textNode.bounds.size
                 let canvasSize = CGSize(width: ceil(size.width), height: ceil(size.height))
                 let scale = videoSize.width / canvasSize.width
-                
+
                 let format = UIGraphicsImageRendererFormat.preferred()
                 format.scale = scale
                 let renderer = UIGraphicsImageRenderer(size: canvasSize, format: format)
-                
+
                 let image = renderer.image { context in
                     self.textNode.wrappedView.layer.render(in: context.cgContext)
                 }
-                
+
                 self.saveImageToDocumentDirectory(image: image)
-                
+
                 VideoRenderer.videoOutput(videoAsset: asset, image: image, size: videoSize) { url in
                     print("videoUrl: ", url.absoluteString)
                     let vc = SecondViewController(url: url.absoluteString)
@@ -230,7 +163,17 @@ class ViewController: DisplayNodeViewController {
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                     self.saveVideo(url: url)
-                    
+
+                }
+                */
+                
+                VideoRenderer.videoOutput(videoAsset: asset, videoTextState: self.textNode.wrappedView.videoTextState) { url in
+                    print("videoUrl: ", url.absoluteString)
+                    let vc = SecondViewController(url: url.absoluteString)
+                    DispatchQueue.main.async {
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                    self.saveVideo(url: url)
                 }
             }
             .disposed(by: self.disposeBag)
@@ -267,14 +210,16 @@ class ViewController: DisplayNodeViewController {
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
             }) { saved, error in
                 if saved {
-                    let fetchOptions = PHFetchOptions()
-                    fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+                    print("Saved to library")
+                    //let fetchOptions = PHFetchOptions()
+                    //fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
                     
-                    let fetchResult = PHAsset.fetchAssets(with: .video, options: fetchOptions).firstObject
+                    //let fetchResult = PHAsset.fetchAssets(with: .video, options: fetchOptions).firstObject
                     // fetchResult is your latest video PHAsset
                     // To fetch latest image  replace .video with .image
                 } else {
-                    print("apaaa")
+                    let message = error?.localizedDescription ?? "Not saved"
+                    print(message)
                 }
             }
         }
@@ -287,8 +232,7 @@ class ViewController: DisplayNodeViewController {
         else { return }
         videoNode.assetURL = videoURL
         videoSize = naturalSize
-        videoNode.setNeedsLayout()
-        node.setNeedsLayout()
+        //node.setNeedsLayout()
 //        let aSize = CGSize(width: node.bounds.width, height: CGFloat.infinity)
 //        let scale = node.bounds.width / videoSize.width
         
@@ -298,9 +242,8 @@ class ViewController: DisplayNodeViewController {
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.sourceType = .savedPhotosAlbum
-        picker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .savedPhotosAlbum)!
+        //picker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .savedPhotosAlbum)!
         picker.mediaTypes = ["public.movie"]
-        
         picker.allowsEditing = false
         present(picker, animated: true, completion: nil)
     }
@@ -313,16 +256,11 @@ class ViewController: DisplayNodeViewController {
             let action: UIAlertAction = UIAlertAction(title: video.0, style: .default) { action -> Void in
                 self.loadVideo(video.1)
             }
-            
             actionSheetController.addAction(action)
         }
-        
-        
-        
+
         let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .cancel) { action -> Void in }
-        
         actionSheetController.addAction(cancelAction)
-        
         actionSheetController.popoverPresentationController?.sourceView = node.view
         
         present(actionSheetController, animated: true, completion: nil)
@@ -332,20 +270,7 @@ class ViewController: DisplayNodeViewController {
         super.init()
         node.automaticallyManagesSubnodes = true
         node.automaticallyRelayoutOnSafeAreaChanges = true
-        node.backgroundColor = .white
         textNode.wrappedView.backgroundColor = .clear
-        
-    }
-    
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-    }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
     }
     
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {

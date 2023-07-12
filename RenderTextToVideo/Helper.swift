@@ -136,3 +136,72 @@ extension UIFont {
         return UIFont.systemFont(ofSize: 11)
     }
 }
+
+
+extension VideoTextState {
+    static var mockState: VideoTextState {
+        let videoTexts: [VideoText] = [
+            VideoText(
+                text: .loremIpsumText,
+                centerPosition: CGPoint(x: 287.6666590372721, y: 264.49998474121094),
+                fontSize: 18,
+                transform: CGAffineTransform(
+                    0.011097607517835945,
+                    -1.1017656309622608,
+                    1.1017656309622608,
+                    0.011097607517835945,
+                    0.0,
+                    0.0
+                )
+            ),
+            VideoText(
+                text: .loremIpsumText,
+                centerPosition: CGPoint(x: 177.83334604899088, y: 553.1666590372721),
+                fontSize: 18,
+                transform: CGAffineTransform(
+                    0.9650346671601788,
+                    -0.10630982081827722,
+                    0.10630982081827722,
+                    0.9650346671601788,
+                    0.0,
+                    0.0
+                )
+            ),
+            VideoText(
+                text: .loremIpsumText,
+                centerPosition: CGPoint(x: 113.16669718424478, y: 290.1666666666667),
+                fontSize: 18,
+                transform: CGAffineTransform(
+                    0.615979561870174,
+                    0.011255414473079527,
+                    -0.011255414473079527,
+                    0.615979561870174,
+                    0.0,
+                    0.0
+                )
+            ),
+            
+            VideoText(
+                text: .loremIpsumText,
+                centerPosition: CGPoint(x: 103.50001017252603, y: 92.49997965494794),
+                fontSize: 18,
+                transform: CGAffineTransform(
+                    0.6078795511474879,
+                    0.02081983220069113,
+                    -0.02081983220069113,
+                    0.6078795511474879,
+                    0.0,
+                    0.0
+                )
+            )
+            
+        ]
+        
+        var texts: [String: VideoText] = [:]
+        videoTexts.forEach { text in
+            texts[text.id] = text
+        }
+        
+        return VideoTextState(texts: texts)
+    }
+}

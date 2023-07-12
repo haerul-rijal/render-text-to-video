@@ -10,6 +10,9 @@ import AVFoundation
 import Photos
 
 internal enum VideoRenderer {
+    
+    
+    
     internal static func videoOutput(videoAsset: AVAsset, image: UIImage, size: CGSize, completion: @escaping ((URL) -> Void)) {
         
         // Create AVMutableComposition object. This object will hold your AVMutableCompositionTrack instances.
@@ -66,6 +69,124 @@ internal enum VideoRenderer {
 //        } else {
 //            naturalSize = videoAssetTrack.naturalSize
 //        }
+        
+        let renderWidth = naturalSize.width
+        let renderHeight = naturalSize.height
+        
+        mainCompositionInst.renderSize = CGSize(width: renderWidth, height: renderHeight)
+        mainCompositionInst.instructions = [mainInstruction]
+        mainCompositionInst.frameDuration = CMTime(value: 1, timescale: 30)
+        
+        applyVideoEffects(to: mainCompositionInst, size: naturalSize, image: image)
+        
+        
+        // Get Path
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        let outputPath = documentsURL?.appendingPathComponent("newVideoWithLabel.mp4")
+        if FileManager.default.fileExists(atPath: (outputPath?.path)!) {
+            do {
+                try FileManager.default.removeItem(atPath: (outputPath?.path)!)
+            }
+            catch {
+                print ("Error deleting file")
+            }
+        }
+        // Create exporter
+        
+        let exporter = AVAssetExportSession.init(asset: mixComposition, presetName: AVAssetExportPresetHighestQuality)
+        exporter?.outputURL = outputPath
+        exporter?.outputFileType = AVFileType.mov
+        exporter?.shouldOptimizeForNetworkUse = true
+        exporter?.videoComposition = mainCompositionInst
+        exporter?.exportAsynchronously {
+            print(outputPath)
+            completion(outputPath!)
+        }
+    }
+    
+    internal static func videoOutput(videoAsset: AVAsset, videoTextState: VideoTextState, completion: @escaping ((URL) -> Void)) {
+        // Create Image
+        let displaySize = videoTextState.displaySize
+        let canvasSize = CGSize(width: ceil(displaySize.width), height: ceil(displaySize.height))
+        let scale = videoTextState.videoSize.width / canvasSize.width
+        
+        let format = UIGraphicsImageRendererFormat.preferred()
+        format.scale = scale
+        let renderer = UIGraphicsImageRenderer(size: canvasSize, format: format)
+        
+        let image = renderer.image { context in
+            let view = UIView(frame: .init(origin: .zero, size: displaySize))
+            videoTextState.texts.forEach { (_, videoText) in
+                let label = VideoTextLabel()
+                view.addSubview(label)
+                label.textColor = videoText.textColor
+                label.font = UIFont.systemFont(ofSize: videoText.fontSize, weight: .bold)
+                label.text = videoText.text
+                
+                let labelSize = CGSize(width: displaySize.width-32, height: .infinity)
+                let estimatedLabelSize = label.sizeThatFits(labelSize)
+                label.frame.size = estimatedLabelSize
+                label.transform = videoText.transform
+                label.center = videoText.centerPosition
+            }
+            view.layer.render(in: context.cgContext)
+        }
+        
+        
+        // Create AVMutableComposition object. This object will hold your AVMutableCompositionTrack instances.
+        let mixComposition = AVMutableComposition()
+        
+        // Video track
+        let videoTrack = mixComposition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: kCMPersistentTrackID_Invalid)
+        do {
+            try videoTrack?.insertTimeRange(CMTimeRange(start: CMTime.zero, duration: videoAsset.duration), of: videoAsset.tracks(withMediaType: AVMediaType.video)[0], at: CMTime.zero)
+        } catch {
+            print("Error selecting video track !!")
+        }
+        
+        // Create AVMutableVideoCompositionInstruction
+        
+        let mainInstruction = AVMutableVideoCompositionInstruction()
+        mainInstruction.timeRange = CMTimeRange(start: CMTime.zero, duration: videoAsset.duration)
+        
+        // Create an AvmutableVideoCompositionLayerInstruction for the video track and fix orientation
+        
+        let videoLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: videoTrack!)
+        let videoAssetTrack = videoAsset.tracks(withMediaType: AVMediaType.video)[0]
+        
+        //        var videoAssetOrientation = UIImage.Orientation.up
+        //        var isVideoAssetPortrait = false
+        //        let videoTransform = videoAssetTrack.preferredTransform
+        //
+        //        if videoTransform.a == 0 && videoTransform.b == 1.0 && videoTransform.c == -1.0 && videoTransform.d == 0 {
+        //            videoAssetOrientation = .right
+        //            isVideoAssetPortrait = true
+        //        }
+        //        if videoTransform.a == 0 && videoTransform.b == -1.0 && videoTransform.c == 1.0 && videoTransform.d == 0 {
+        //            videoAssetOrientation = .left
+        //            isVideoAssetPortrait = true
+        //        }
+        //        if videoTransform.a == 1.0 && videoTransform.b == 0 && videoTransform.c == 0 && videoTransform.d == 1.0 {
+        //            videoAssetOrientation = .up
+        //        }
+        //        if videoTransform.a == -1.0 && videoTransform.b == 0 && videoTransform.c == 0 && videoTransform.d == -1.0 {
+        //            videoAssetOrientation = .down
+        //        }
+        
+        videoLayerInstruction.setTransform(videoAssetTrack.preferredTransform, at: CMTime.zero)
+        videoLayerInstruction.setOpacity(0.0, at: videoAsset.duration)
+        
+        //Add instructions
+        
+        mainInstruction.layerInstructions = [videoLayerInstruction]
+        let mainCompositionInst = AVMutableVideoComposition()
+        let naturalSize = videoTextState.videoSize
+        //        let naturalSize : CGSize!
+        //        if isVideoAssetPortrait {
+        //            naturalSize = CGSize(width: videoAssetTrack.naturalSize.height, height: videoAssetTrack.naturalSize.width)
+        //        } else {
+        //            naturalSize = videoAssetTrack.naturalSize
+        //        }
         
         let renderWidth = naturalSize.width
         let renderHeight = naturalSize.height
