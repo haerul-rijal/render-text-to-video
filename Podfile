@@ -9,6 +9,7 @@ target 'RenderTextToVideo' do
   pod 'RxSwift', '5.1.1'
   pod 'RxCocoa', '5.1.1'
   pod 'Texture', '>=2.0'
+  pod 'MBProgressHUD'
   pod 'RxCocoa-Texture'
   pod 'TextureSwiftSupport'
 end

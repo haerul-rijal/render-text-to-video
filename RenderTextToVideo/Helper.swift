@@ -92,6 +92,11 @@ extension URL {
         let asset = AVURLAsset(url: self)
         return asset.duration.seconds
     }
+    
+    internal var fileSize: Int64 {
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: path) else { return 0 }
+        return attributes[.size] as? Int64 ?? 0
+    }
 }
 
 
@@ -136,6 +141,26 @@ extension UIFont {
         return UIFont.systemFont(ofSize: 11)
     }
 }
+
+extension Date {
+    internal func dateToString(format: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.string(from: self)
+    }
+    
+    internal static func stringToDate(dateString: String, format: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.date(from: dateString) ?? Date()
+    }
+    
+    internal func changeDateFormat(format: String) -> Date {
+        let dateToStringFormat = dateToString(format: format)
+        return Date.stringToDate(dateString: dateToStringFormat, format: format)
+    }
+}
+
 
 
 extension VideoTextState {

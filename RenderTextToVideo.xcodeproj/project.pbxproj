@@ -24,6 +24,7 @@
 		2BCE922A2A30460D00ADD721 /* VideoTextPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE92292A30460D00ADD721 /* VideoTextPreview.swift */; };
 		2BCE922C2A305D3300ADD721 /* VideoTextPreviewNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE922B2A305D3300ADD721 /* VideoTextPreviewNode.swift */; };
 		2BE073C62A5D0D3200F6D525 /* DeleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BE073C52A5D0D3200F6D525 /* DeleteView.swift */; };
+		2BE073C82A5EB73D00F6D525 /* BenchmarkLogVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BE073C72A5EB73D00F6D525 /* BenchmarkLogVC.swift */; };
 		2BE373D22A3AFC26002CBF3C /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BE373D12A3AFC26002CBF3C /* Helper.swift */; };
 		F378318E73A5E3B7A19FFBAF /* Pods_RenderTextToVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B3D895F6F911DE10257D55 /* Pods_RenderTextToVideo.framework */; };
 /* End PBXBuildFile section */
@@ -67,6 +68,7 @@
 		2BCE92292A30460D00ADD721 /* VideoTextPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTextPreview.swift; sourceTree = "<group>"; };
 		2BCE922B2A305D3300ADD721 /* VideoTextPreviewNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTextPreviewNode.swift; sourceTree = "<group>"; };
 		2BE073C52A5D0D3200F6D525 /* DeleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteView.swift; sourceTree = "<group>"; };
+		2BE073C72A5EB73D00F6D525 /* BenchmarkLogVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BenchmarkLogVC.swift; sourceTree = "<group>"; };
 		2BE373D12A3AFC26002CBF3C /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		52B3D895F6F911DE10257D55 /* Pods_RenderTextToVideo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RenderTextToVideo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6DC9840F5A1F303B93C36272 /* Pods-RenderTextToVideo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RenderTextToVideo.debug.xcconfig"; path = "Target Support Files/Pods-RenderTextToVideo/Pods-RenderTextToVideo.debug.xcconfig"; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 				2BCE8E562A302FD500ADD721 /* PreviewVC.swift */,
 				2BE373D12A3AFC26002CBF3C /* Helper.swift */,
 				2B35513C2A4013CC0098D345 /* VideoRenderer.swift */,
+				2BE073C72A5EB73D00F6D525 /* BenchmarkLogVC.swift */,
 				2B2686DA2A54DB080028771E /* SecondViewController.swift */,
 			);
 			path = RenderTextToVideo;
@@ -379,6 +382,7 @@
 				2B65F8372A5670F200C9E998 /* VideoTextLabel.swift in Sources */,
 				2BE373D22A3AFC26002CBF3C /* Helper.swift in Sources */,
 				2BCE8E552A302C7D00ADD721 /* VideoText.swift in Sources */,
+				2BE073C82A5EB73D00F6D525 /* BenchmarkLogVC.swift in Sources */,
 				2BCE92282A3045DD00ADD721 /* ViewWrapperNode.swift in Sources */,
 				2BCE8E252A2DD7FF00ADD721 /* SceneDelegate.swift in Sources */,
 			);
@@ -551,7 +555,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4AD342VD64;
+				DEVELOPMENT_TEAM = 4U8ZNHWRP2;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RenderTextToVideo/Info.plist;
@@ -588,7 +592,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4AD342VD64;
+				DEVELOPMENT_TEAM = 4U8ZNHWRP2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RenderTextToVideo/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";

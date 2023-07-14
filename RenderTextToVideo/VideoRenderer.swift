@@ -104,18 +104,20 @@ internal enum VideoRenderer {
         }
     }
     
-    internal static func videoOutput(videoAsset: AVAsset, videoTextState: VideoTextState, completion: @escaping ((URL) -> Void)) {
-        // Create Image
+    internal static func videoOutput(url: URL, videoTextState: VideoTextState, completion: @escaping ((VideoResultInfo) -> Void)) {
+        
+        let videoAsset = AVAsset(url: url)
         let displaySize = videoTextState.displaySize
         let canvasSize = CGSize(width: ceil(displaySize.width), height: ceil(displaySize.height))
         let scale = videoTextState.videoSize.width / canvasSize.width
-        
+        // Create Image
         let format = UIGraphicsImageRendererFormat.preferred()
         format.scale = scale
         let renderer = UIGraphicsImageRenderer(size: canvasSize, format: format)
         
         let image = renderer.image { context in
-            let view = UIView(frame: .init(origin: .zero, size: displaySize))
+            let view = UIView()
+            view.frame = CGRect(origin: .zero, size: displaySize)
             videoTextState.texts.forEach { (_, videoText) in
                 let label = VideoTextLabel()
                 view.addSubview(label)
@@ -144,6 +146,15 @@ internal enum VideoRenderer {
             print("Error selecting video track !!")
         }
         
+        // Audio track
+        let audioTrack = mixComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
+        do {
+            try audioTrack?.insertTimeRange(CMTimeRange(start: CMTime.zero, duration: videoAsset.duration), of: videoAsset.tracks(withMediaType: AVMediaType.audio)[0], at: CMTime.zero)
+        } catch {
+            print("Error selecting audio track !!")
+        }
+        
+        
         // Create AVMutableVideoCompositionInstruction
         
         let mainInstruction = AVMutableVideoCompositionInstruction()
@@ -152,26 +163,26 @@ internal enum VideoRenderer {
         // Create an AvmutableVideoCompositionLayerInstruction for the video track and fix orientation
         
         let videoLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: videoTrack!)
-        let videoAssetTrack = videoAsset.tracks(withMediaType: AVMediaType.video)[0]
         
-        //        var videoAssetOrientation = UIImage.Orientation.up
-        //        var isVideoAssetPortrait = false
-        //        let videoTransform = videoAssetTrack.preferredTransform
-        //
-        //        if videoTransform.a == 0 && videoTransform.b == 1.0 && videoTransform.c == -1.0 && videoTransform.d == 0 {
-        //            videoAssetOrientation = .right
-        //            isVideoAssetPortrait = true
-        //        }
-        //        if videoTransform.a == 0 && videoTransform.b == -1.0 && videoTransform.c == 1.0 && videoTransform.d == 0 {
-        //            videoAssetOrientation = .left
-        //            isVideoAssetPortrait = true
-        //        }
-        //        if videoTransform.a == 1.0 && videoTransform.b == 0 && videoTransform.c == 0 && videoTransform.d == 1.0 {
-        //            videoAssetOrientation = .up
-        //        }
-        //        if videoTransform.a == -1.0 && videoTransform.b == 0 && videoTransform.c == 0 && videoTransform.d == -1.0 {
-        //            videoAssetOrientation = .down
-        //        }
+        let videoAssetTrack = videoAsset.tracks(withMediaType: AVMediaType.video)[0]
+//                var videoAssetOrientation = UIImage.Orientation.up
+//                var isVideoAssetPortrait = false
+//                let videoTransform = videoAssetTrack.preferredTransform
+//        
+//                if videoTransform.a == 0 && videoTransform.b == 1.0 && videoTransform.c == -1.0 && videoTransform.d == 0 {
+//                    videoAssetOrientation = .right
+//                    isVideoAssetPortrait = true
+//                }
+//                if videoTransform.a == 0 && videoTransform.b == -1.0 && videoTransform.c == 1.0 && videoTransform.d == 0 {
+//                    videoAssetOrientation = .left
+//                    isVideoAssetPortrait = true
+//                }
+//                if videoTransform.a == 1.0 && videoTransform.b == 0 && videoTransform.c == 0 && videoTransform.d == 1.0 {
+//                    videoAssetOrientation = .up
+//                }
+//                if videoTransform.a == -1.0 && videoTransform.b == 0 && videoTransform.c == 0 && videoTransform.d == -1.0 {
+//                    videoAssetOrientation = .down
+//                }
         
         videoLayerInstruction.setTransform(videoAssetTrack.preferredTransform, at: CMTime.zero)
         videoLayerInstruction.setOpacity(0.0, at: videoAsset.duration)
@@ -199,8 +210,15 @@ internal enum VideoRenderer {
         
         
         // Get Path
+        
+        var benchmarkData = VideoResultInfo(
+            videoSize: naturalSize,
+            fileSize: url.fileSize,
+            startDate: Date(),
+            duration: url.duration
+        )
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
-        let outputPath = documentsURL?.appendingPathComponent("newVideoWithLabel.mp4")
+        let outputPath = documentsURL?.appendingPathComponent("\(benchmarkData.id)-result.mp4")
         if FileManager.default.fileExists(atPath: (outputPath?.path)!) {
             do {
                 try FileManager.default.removeItem(atPath: (outputPath?.path)!)
@@ -213,16 +231,19 @@ internal enum VideoRenderer {
         
         let exporter = AVAssetExportSession.init(asset: mixComposition, presetName: AVAssetExportPresetHighestQuality)
         exporter?.outputURL = outputPath
-        exporter?.outputFileType = AVFileType.mov
-        exporter?.shouldOptimizeForNetworkUse = true
+        exporter?.outputFileType = AVFileType.mp4
+        exporter?.shouldOptimizeForNetworkUse = false
         exporter?.videoComposition = mainCompositionInst
         exporter?.exportAsynchronously {
             print(outputPath)
-            completion(outputPath!)
+            benchmarkData.outputVideoUrl = outputPath
+            benchmarkData.flattenedFileSize = outputPath?.fileSize ?? 0
+            benchmarkData.endDate = Date()
+            completion(benchmarkData)
         }
     }
     
-    internal static func applyVideoEffects(to composition: AVMutableVideoComposition, size: CGSize, image: UIImage) {
+    private static func applyVideoEffects(to composition: AVMutableVideoComposition, size: CGSize, image: UIImage) {
         
         let overlayLayer = CALayer()
         
@@ -241,26 +262,26 @@ internal enum VideoRenderer {
         composition.animationTool = AVVideoCompositionCoreAnimationTool(postProcessingAsVideoLayer: videoLayer, in: parentLayer)
     }
     
-    internal static func exportDidFinish(session: AVAssetExportSession) {
-        if session.status == .completed {
-            let outputURL: URL? = session.outputURL
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: outputURL!)
-            }) { saved, error in
-                if saved {
-                    let fetchOptions = PHFetchOptions()
-                    fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-                    let fetchResult = PHAsset.fetchAssets(with: .video, options: fetchOptions).lastObject
-                    PHImageManager().requestAVAsset(forVideo: fetchResult!, options: nil, resultHandler: { (avurlAsset, audioMix, dict) in
-                        let newObj = avurlAsset as! AVURLAsset
-                        print(newObj.url)
-                        DispatchQueue.main.async(execute: {
-                            print(newObj.url.absoluteString)
-                        })
-                    })
-                    print (fetchResult!)
-                }
-            }
-        }
-    }
+//    internal static func exportDidFinish(session: AVAssetExportSession) {
+//        if session.status == .completed {
+//            let outputURL: URL? = session.outputURL
+//            PHPhotoLibrary.shared().performChanges({
+//                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: outputURL!)
+//            }) { saved, error in
+//                if saved {
+//                    let fetchOptions = PHFetchOptions()
+//                    fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+//                    let fetchResult = PHAsset.fetchAssets(with: .video, options: fetchOptions).lastObject
+//                    PHImageManager().requestAVAsset(forVideo: fetchResult!, options: nil, resultHandler: { (avurlAsset, audioMix, dict) in
+//                        let newObj = avurlAsset as! AVURLAsset
+//                        print(newObj.url)
+//                        DispatchQueue.main.async(execute: {
+//                            print(newObj.url.absoluteString)
+//                        })
+//                    })
+//                    print (fetchResult!)
+//                }
+//            }
+//        }
+//    }
 }

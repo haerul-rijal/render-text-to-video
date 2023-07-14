@@ -54,3 +54,24 @@ struct VideoTextState: Equatable {
     var initialFontSize: CGFloat = 18
     
 }
+
+struct VideoResultInfo: Equatable {
+    var id: String = UUID().uuidString
+    var videoSize: CGSize = .zero
+    var fileSize: Int64 = 0
+    var startDate: Date = .init()
+    var endDate: Date = .init()
+    var flattenedFileSize: Int64 = 0
+    var duration: CGFloat = 0
+    var outputVideoUrl: URL? = nil
+    
+    var flattenedTime: Int {
+        endDate.seconds(from: startDate)
+    }
+}
+
+extension Date {
+    func seconds(from date: Date) -> Int {
+        return Calendar.current.dateComponents([.second], from: date, to: self).second ?? 0
+    }
+}

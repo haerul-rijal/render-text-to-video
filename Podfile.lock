@@ -1,4 +1,5 @@
 PODS:
+  - MBProgressHUD (1.2.0)
   - PINCache (3.0.1-beta.6):
     - PINCache/Arc-exception-safe (= 3.0.1-beta.6)
     - PINCache/Core (= 3.0.1-beta.6)
@@ -48,6 +49,7 @@ PODS:
     - Texture/Core (~> 2.8)
 
 DEPENDENCIES:
+  - MBProgressHUD
   - RxCocoa (= 5.1.1)
   - RxCocoa-Texture
   - RxSwift (= 5.1.1)
@@ -56,6 +58,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - MBProgressHUD
     - PINCache
     - PINOperation
     - PINRemoteImage
@@ -67,6 +70,7 @@ SPEC REPOS:
     - TextureSwiftSupport
 
 SPEC CHECKSUMS:
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   PINCache: d195fdba255283f7e9900a55e3cced377f431f9b
   PINOperation: 24b774353ca248fcf87d67b2d61eef42087c125a
   PINRemoteImage: d6d51c5d2adda55f1ce30c96e850b6c4ebd2856a
@@ -77,6 +81,6 @@ SPEC CHECKSUMS:
   Texture: 8ecf6984065a1e54f06bf97b349ecca28582acd7
   TextureSwiftSupport: 5317b8df13d3a3fe2881a6e438335a96797632fb
 
-PODFILE CHECKSUM: 31afba2735f7c1fdbb010041dbbce044e3196327
+PODFILE CHECKSUM: 2d18e82e4d98820fd7e7913eedacede574c99eb8
 
 COCOAPODS: 1.11.2

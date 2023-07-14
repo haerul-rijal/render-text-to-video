@@ -20,6 +20,8 @@ class ViewController: DisplayNodeViewController {
         ("Portrait", "file:///Users/haerul.rijal/Library/Developer/CoreSimulator/Devices/35F26D74-9B1D-4549-9EE6-318138AE8DFC/data/Media/DCIM/100APPLE/IMG_0008.MP4")
     ]
     
+    var videoURLs: [URL] = []
+    
     
     var videoSize: CGSize = CGSize(width: 768, height: 1024)
     {
@@ -44,7 +46,15 @@ class ViewController: DisplayNodeViewController {
         let node = ASButtonNode()
         node.style.height = ASDimensionMake(32)
         node.backgroundColor = .systemGreen
-        node.setTitle("➕ Add", with: .defaultFont, with: .white, for: .normal)
+        node.setTitle("➕ Add Text", with: .defaultFont, with: .white, for: .normal)
+        return node
+    }()
+    
+    let benchMarkButtonNode: ASButtonNode = {
+        let node = ASButtonNode()
+        node.style.height = ASDimensionMake(32)
+        node.backgroundColor = .systemGreen
+        node.setTitle("📝 Benchmark", with: .defaultFont, with: .white, for: .normal)
         return node
     }()
     
@@ -52,7 +62,7 @@ class ViewController: DisplayNodeViewController {
         let node = ASButtonNode()
         node.style.height = ASDimensionMake(32)
         node.backgroundColor = .systemGreen
-        node.setTitle("🎥 Browse", with: .defaultFont, with: .white, for: .normal)
+        node.setTitle("📂 Open Video", with: .defaultFont, with: .white, for: .normal)
         return node
     }()
     
@@ -60,7 +70,7 @@ class ViewController: DisplayNodeViewController {
         let node = ASButtonNode()
         node.style.height = ASDimensionMake(32)
         node.backgroundColor = .systemGreen
-        node.setTitle("📦 Mock", with: .defaultFont, with: .white, for: .normal)
+        node.setTitle("📦 Load Mock State", with: .defaultFont, with: .white, for: .normal)
         return node
     }()
     
@@ -68,7 +78,7 @@ class ViewController: DisplayNodeViewController {
         let node = ASButtonNode()
         node.style.height = ASDimensionMake(32)
         node.backgroundColor = .systemGreen
-        node.setTitle("🔄 Save", with: .defaultFont, with: .white, for: .normal)
+        node.setTitle("💾 Save Video", with: .defaultFont, with: .white, for: .normal)
         return node
     }()
     
@@ -76,7 +86,7 @@ class ViewController: DisplayNodeViewController {
         let node = ASButtonNode()
         node.style.height = ASDimensionMake(32)
         node.backgroundColor = .systemRed
-        node.setTitle("🔄 Clear", with: .defaultFont, with: .white, for: .normal)
+        node.setTitle("🔄 Clear All Text", with: .defaultFont, with: .white, for: .normal)
         return node
     }()
     
@@ -93,8 +103,8 @@ class ViewController: DisplayNodeViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        title = "Add Text"
-        navigationItem.title = "Add Text"
+        title = "Add Text To Video"
+        navigationItem.title = title
 //        node.backgroundColor = .white
         //videoNode.style.preferredSize = videoSize.sizeThatFits(in: node.bounds.size)
         setupHandler()
@@ -123,6 +133,15 @@ class ViewController: DisplayNodeViewController {
                 guard let self else { return }
                 //self.showImageActionSheet()
                 self.presentImagePicker()
+                //self.loadMultipleVideos()
+            }
+            .disposed(by: self.disposeBag)
+        
+        benchMarkButtonNode.rx.tap
+            .asDriver()
+            .drive { [weak self] _ in
+                guard let self else { return }
+                self.openBenchmark()
             }
             .disposed(by: self.disposeBag)
         
@@ -137,7 +156,7 @@ class ViewController: DisplayNodeViewController {
         saveButtonNode.rx.tap
             .asDriver()
             .drive { [weak self] _ in
-                guard let self, let asset = self.videoNode.asset else { return }
+                guard let self, let assetUrl = self.videoNode.assetURL else { return }
                 /*
                 let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 print(documentsDirectory)
@@ -167,8 +186,9 @@ class ViewController: DisplayNodeViewController {
                 }
                 */
                 
-                VideoRenderer.videoOutput(videoAsset: asset, videoTextState: self.textNode.wrappedView.videoTextState) { url in
-                    print("videoUrl: ", url.absoluteString)
+                VideoRenderer.videoOutput(url: assetUrl, videoTextState: self.textNode.wrappedView.videoTextState) { data in
+                    let url = data.outputVideoUrl!
+                    print("videoUrl: ", url)
                     let vc = SecondViewController(url: url.absoluteString)
                     DispatchQueue.main.async {
                         self.navigationController?.pushViewController(vc, animated: true)
@@ -238,6 +258,11 @@ class ViewController: DisplayNodeViewController {
         
     }
     
+    private func openBenchmark() {
+        let vc = BenchmarkLogVC()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
     private func presentImagePicker() {
         let picker = UIImagePickerController()
         picker.delegate = self
@@ -286,6 +311,7 @@ class ViewController: DisplayNodeViewController {
                 }
                 .flexGrow(1)
                 .flexShrink(1)
+                
                 HStackLayout(spacing: 8) {
                     addButtonNode
                         .flexGrow(1)
@@ -293,12 +319,18 @@ class ViewController: DisplayNodeViewController {
                         .flexGrow(1)
                     mockTextButtonNode
                         .flexGrow(1)
+                }
+                .padding(.vertical, 8)
+                
+                HStackLayout(spacing: 8) {
+                    benchMarkButtonNode
+                        .flexGrow(1)
                     saveButtonNode
                         .flexGrow(1)
                     clearButtonNode
                         .flexGrow(1)
                 }
-                .padding(8)
+                .padding(.bottom, 8)
             }
             .padding(.top, self.node.safeAreaInsets.top)
             .padding(.bottom, self.node.safeAreaInsets.bottom)
