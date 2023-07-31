@@ -1,0 +1,11 @@
+${PODS_ROOT}/Target Support Files/Pods-RenderTextToVideo/Pods-RenderTextToVideo-frameworks.sh
+${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework
+${BUILT_PRODUCTS_DIR}/PINCache/PINCache.framework
+${BUILT_PRODUCTS_DIR}/PINOperation/PINOperation.framework
+${BUILT_PRODUCTS_DIR}/PINRemoteImage/PINRemoteImage.framework
+${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework
+${BUILT_PRODUCTS_DIR}/RxCocoa-Texture/RxCocoa_Texture.framework
+${BUILT_PRODUCTS_DIR}/RxRelay/RxRelay.framework
+${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework
+${BUILT_PRODUCTS_DIR}/Texture/AsyncDisplayKit.framework
+${BUILT_PRODUCTS_DIR}/TextureSwiftSupport/TextureSwiftSupport.framework

@@ -108,6 +108,12 @@ class ViewController: DisplayNodeViewController {
 //        node.backgroundColor = .white
         //videoNode.style.preferredSize = videoSize.sizeThatFits(in: node.bounds.size)
         setupHandler()
+        let gesture = UIPanGestureRecognizer(target: self, action: #selector(didPannn))
+        videoNode.view.addGestureRecognizer(gesture)
+    }
+    
+    @objc func didPannn() {
+        print("...")
     }
     
     private func setupHandler() {

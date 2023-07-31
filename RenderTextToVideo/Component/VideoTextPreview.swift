@@ -86,6 +86,12 @@ final class VideoTextPreview: UIView {
         }
     }
     
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        print(point)
+        print(String(describing: event))
+        return true
+    }
+    
     func addNewText(_ text: VideoText? = nil) {
         let videoText = text ?? VideoText(
             text: .loremIpsumText,
@@ -114,7 +120,7 @@ final class VideoTextPreview: UIView {
         
         videoTextState.texts[videoText.id] = videoText
         textLabels.append(label)
-        
+        selectText(label: label)
     }
     
     private func setLabelSize(label: VideoTextLabel) {
